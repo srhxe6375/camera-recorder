@@ -1,1 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Video Quality Selector:"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/spinnerQuality"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Max File Size (MB) [0 = No Limit]:"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/etMaxFileSize"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:hint="e.g. 50"
+            android:layout_marginBottom="16dp" />
+
+        <CheckBox
+            android:id="@+id/cbFrontCamera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Use Front Camera" />
+
+        <CheckBox
+            android:id="@+id/cbMuteAudio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mute Audio"
+            android:layout_marginBottom="16dp" />
+
+        <Button
+            android:id="@+id/btnToggleTorch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Toggle Flashlight / Torch"
+            android:layout_marginBottom="16dp" />
+
+        <Button
+            android:id="@+id/btnStart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Start Background Recording"
+            android:backgroundTint="@color/design_default_color_primary" />
+
+        <Button
+            android:id="@+id/btnStop"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Stop Recording"
+            android:backgroundTint="@android:color/holo_red_dark"
+            android:layout_marginTop="8dp" />
+
+    </LinearLayout>
+</ScrollView>
