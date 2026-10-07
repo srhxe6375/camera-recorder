@@ -1,13 +1,22 @@
 package com.example.videorecorder
 
-import android.app.*
+import android.annotation.SuppressLint
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
-import androidx.camera.core.*
+import androidx.camera.core.CameraControl
+import androidx.camera.core.CameraSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.video.*
+import androidx.camera.video.FileOutputOptions
+import androidx.camera.video.Quality
+import androidx.camera.video.QualitySelector
+import androidx.camera.video.Recorder
+import androidx.camera.video.Recording
+import androidx.camera.video.VideoCapture
+import androidx.camera.video.VideoRecordEvent
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleService
@@ -61,17 +70,18 @@ class CameraService : LifecycleService() {
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .build()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            startForeground(
-                NOTIFICATION_ID,
-                notification,
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA or ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE
-            )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            var foregroundType = ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                foregroundType = foregroundType or ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE
+            }
+            startForeground(NOTIFICATION_ID, notification, foregroundType)
         } else {
             startForeground(NOTIFICATION_ID, notification)
         }
     }
 
+    @SuppressLint("MissingPermission")
     private fun setupAndStartRecording(
         qualityStr: String,
         isFrontCamera: Boolean,
@@ -87,7 +97,7 @@ class CameraService : LifecycleService() {
                 "HD" -> Quality.HD
                 "FHD" -> Quality.FHD
                 "HIGHEST" -> Quality.HIGHEST
-                else -> Quality.SD // डिफॉल्ट लो साइज़
+                else -> Quality.SD
             }
 
             val recorder = Recorder.Builder()
@@ -128,7 +138,7 @@ class CameraService : LifecycleService() {
                 }
 
                 // 4. रिकॉर्डिंग शुरू करें
-                activeRecording = pendingRecording?.start(ContextCompat.getMainExecutor(this)) { event ->
+                activeRecording = pendingRecording?.start(ContextCompat.getMainExecutor(this)) { event: VideoRecordEvent ->
                     when (event) {
                         is VideoRecordEvent.Start -> {
                             isRecording = true
