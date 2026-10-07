@@ -16,7 +16,6 @@ import androidx.camera.video.QualitySelector
 import androidx.camera.video.Recorder
 import androidx.camera.video.Recording
 import androidx.camera.video.VideoCapture
-import androidx.camera.video.VideoCapture.with
 import androidx.camera.video.VideoRecordEvent
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
@@ -93,7 +92,7 @@ class CameraService : LifecycleService() {
         cameraProviderFuture.addListener({
             val cameraProvider = cameraProviderFuture.get()
 
-            // 1. रिज़ॉल्यूशन क्वालिटी चुनना
+            // 1. Quality selection
             val quality = when (qualityStr) {
                 "HD" -> Quality.HD
                 "FHD" -> Quality.FHD
@@ -105,7 +104,8 @@ class CameraService : LifecycleService() {
                 .setQualitySelector(QualitySelector.from(quality))
                 .build()
 
-            videoCapture = VideoCapture.with(recorder)
+            // VideoCapture instance creation using Builder pattern
+            videoCapture = VideoCapture.Builder(recorder).build()
 
             val cameraSelector = if (isFrontCamera) {
                 CameraSelector.DEFAULT_FRONT_CAMERA
@@ -118,7 +118,7 @@ class CameraService : LifecycleService() {
                 val camera = cameraProvider.bindToLifecycle(this, cameraSelector, videoCapture)
                 cameraControl = camera.cameraControl
 
-                // 2. आउटपुट फ़ाइल सेट करना
+                // 2. Output file setup
                 val outputFile = File(
                     getExternalFilesDir(null),
                     "REC_${System.currentTimeMillis()}.mp4"
@@ -126,7 +126,7 @@ class CameraService : LifecycleService() {
 
                 val fileOutputOptionsBuilder = FileOutputOptions.Builder(outputFile)
 
-                // 3. फाइल साइज़ लिमिट (यदि सेट है)
+                // 3. File size limit
                 if (maxSizeBytes > 0) {
                     fileOutputOptionsBuilder.setFileSizeLimit(maxSizeBytes)
                 }
@@ -138,7 +138,7 @@ class CameraService : LifecycleService() {
                     pendingRecording?.withAudioEnabled()
                 }
 
-                // 4. रिकॉर्डिंग शुरू करें
+                // 4. Start recording
                 activeRecording = pendingRecording?.start(ContextCompat.getMainExecutor(this)) { event: VideoRecordEvent ->
                     when (event) {
                         is VideoRecordEvent.Start -> {
